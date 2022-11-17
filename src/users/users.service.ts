@@ -15,6 +15,7 @@ import { UpdateUserInput } from './dto/inputs';
 
 import { SignupInput } from '../auth/dto/inputs/singup.input';
 import { ValidRoles } from '../auth/enums/valid-roles.enum';
+import { PaginationArgs } from './../common/dto/args';
 
 @Injectable()
 export class UsersService {
@@ -37,17 +38,22 @@ export class UsersService {
     }
   }
 
-  async findAll(roles: ValidRoles[]): Promise<User[]> {
+  async findAll(
+    roles: ValidRoles[],
+    paginationArgs: PaginationArgs,
+  ): Promise<User[]> {
+    const { limit, offset } = paginationArgs;
+
     if (roles.length === 0)
       return this.usersRepository.find({
-        // Todo: no es necesario porque tenemos lazy la propiedad lastUpdateBy
-        // relations: {
-        //   lastUpdateBy: true,
-        // },
+        take: limit,
+        skip: offset,
       });
 
     return this.usersRepository
       .createQueryBuilder()
+      .take(limit)
+      .skip(offset)
       .andWhere('ARRAY[roles] && ARRAY[:...roles]')
       .setParameter('roles', roles)
       .getMany();

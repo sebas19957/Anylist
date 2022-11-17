@@ -32,3 +32,5 @@ docker-compose up -d
 ```
 yarn start:dev
 ```
+
+8. Ejecutar la **"mutation"** executedSeed, para llenar la base de datos con la información
